@@ -1,0 +1,97 @@
+//file:practice2.cpp
+//author:Besedina S.I.
+//date:05.07.2021
+//task: calculate the area of intersection of two circles
+//підключення стандартних бібліотек С
+#include <stdio.h>
+#include <stdlib.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
+double r1,r2,x1,x2,y11,y2,distance,S;//змінні для зберігання радіусів, координат центрів, відстані між ними і площі перетину
+int check_radius(double r1, double r2);//перевірка 
+double calculate_inner_circle(double r);
+double calculate_intersection(double r1, double r2, double distance );//функції для розрахунку площі
+void check_arccos(double r1, double r2, double distance);
+int main()
+{
+    int b;
+    S=0;
+    printf("Введіть координати першого центру  та радіус:");
+    scanf("%lf %lf %lf", &x1,&y11,&r1);
+    printf("Введіть координати другого центру та радіус:");
+    scanf("%lf %lf %lf", &x2,&y2,&r2);
+    b=check_radius(r1,r2);
+    if (b!=0){
+        printf("Помилка введення");
+        return 1;
+    }
+    distance=sqrt(pow((x1-x2),2)+pow((y11-y2),2));
+    if(distance>r1+r2){
+        printf("Круги не перетинаються");
+    }
+    else{
+        if(distance==r1+r2){
+            printf("Круги стикаються");
+        }
+        else{
+            if(distance<=fabs(r1-r2)){
+                printf("Один круг знаходиться в іншому.\n");
+                if(r1-r2>=0){
+                    S=calculate_inner_circle(r2);
+                }
+                else{
+                    S=calculate_inner_circle(r1);
+                }
+            }
+            else{
+                check_arccos(r1,r2,distance);
+                S=calculate_intersection(r1,r2,distance);
+            }
+        }
+    }
+    if(S!=0){
+        printf("Площа перетину дорівнює %lf",S);
+    }
+    return 0;
+}
+int check_radius( double r1, double r2){
+    int n1=0, n2=0;
+    do{
+        if(r1<=0){
+            printf("Введіть перший радіус заново(радіус повинен бути беззнаковим числом):");
+            scanf("%lf",&r1);
+            n1++;
+        }
+    }while(r1<=0||n1==5);
+    do{
+        if(r2<=0){
+            printf("Введіть другий радіус заново(радіус повинен бути беззнаковим числом):");
+            scanf("%lf",&r2);
+            n2++;
+        }
+    }while(r2<=0||n2==5);
+    if(r1<=0||r2<=0){
+        return 100;
+    }
+    else{
+        return 0;
+    }
+}
+double calculate_inner_circle(double r){
+    S=M_PI*pow(r,2);
+    return S;
+}
+double calculate_intersection( double r1,  double r2, double distance){
+    double l,k;
+    l=2 * acos((r1*r1 - r2*r2 + distance*distance) / (2 * r1 * distance));
+    k=2 * acos((r2*r2 - r1*r1 + distance*distance) / (2 * r2 * distance));
+    S=((r1*r1 * (l - sin(l))) / 2)+((r2*r2 * (k - sin(k))) / 2);
+    return S;
+}
+void check_arccos(double r1, double r2, double distance){
+    if(acos((r1*r1 - r2*r2 + distance*distance) / (2 * r1 * distance))>1||acos((r1*r1 - r2*r2 + distance*distance) / (2 * r1 * distance))<-1||acos((r2*r2 - r1*r1 + distance*distance) / (2 * r2 * distance))<-1||acos((r2*r2 - r1*r1 + distance*distance) / (2 * r2 * distance))>1){
+        printf("Неможливо розрахувати за даною формулою");
+        exit(0);
+    }
+
+}
